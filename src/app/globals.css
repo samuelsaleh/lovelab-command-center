@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --plum: #6B3FA0;
+  --plum-light: #8B5FC0;
+  --plum-dark: #4A2D73;
+  --plum-bg: #F5F0FA;
+  --gold: #C9A96E;
+  --gold-light: #E8D5A8;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #FAFAFA;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
