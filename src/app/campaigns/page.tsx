@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import MetricCard from '@/components/MetricCard';
+import { IconEuro, IconClick, IconTarget } from '@/components/icons';
 import { useViewMode } from '@/context/ViewModeContext';
 
 interface Campaign {
@@ -48,9 +49,9 @@ export default function CampaignsPage() {
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
-        <MetricCard label={isSimple ? 'Total spent' : 'Total Spend'} value={`€${totalSpend.toFixed(2)}`} icon="€" iconBg="bg-plum-bg" iconColor="text-plum" change="All campaigns" />
-        <MetricCard label={isSimple ? 'Clicks' : 'Total Clicks'} value={totalClicks.toLocaleString()} icon="👆" iconBg="bg-emerald-50" iconColor="text-emerald-600" changeType="up" />
-        <MetricCard label={isSimple ? 'Sales' : 'Conversions'} value={totalConv.toString()} icon="🎯" iconBg="bg-amber-50" iconColor="text-amber-600" changeType={totalConv < 3 ? 'down' : 'up'} />
+        <MetricCard label={isSimple ? 'Total spent' : 'Total Spend'} value={`€${totalSpend.toFixed(2)}`} icon={<IconEuro className="w-3.5 h-3.5" />} change="All campaigns" />
+        <MetricCard label={isSimple ? 'Clicks' : 'Total Clicks'} value={totalClicks.toLocaleString()} icon={<IconClick className="w-3.5 h-3.5" />} changeType="up" />
+        <MetricCard label={isSimple ? 'Sales' : 'Conversions'} value={totalConv.toString()} icon={<IconTarget className="w-3.5 h-3.5" />} changeType={totalConv < 3 ? 'down' : 'up'} />
       </div>
 
       {allCampaigns.length > 0 && (

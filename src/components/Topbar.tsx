@@ -43,7 +43,7 @@ function RefreshButton() {
       type="button"
       onClick={refresh}
       disabled={isRefreshing}
-      className="flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum disabled:cursor-not-allowed disabled:opacity-60"
+      className="flex h-9 items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum disabled:cursor-not-allowed disabled:opacity-60"
       aria-label="Refresh data"
       title="Re-fetch live data from Google & Meta"
     >
@@ -78,7 +78,7 @@ export default function Topbar() {
   }, []);
 
   return (
-    <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-gray-200 bg-white/85 px-4 py-3 backdrop-blur-xl sm:px-6 md:px-6 lg:px-8 lg:py-3.5">
+    <div className="sticky top-0 z-40 flex items-center justify-between gap-3 border-b border-lovelab-border bg-[#FDF7FA]/90 px-4 py-3 backdrop-blur-xl sm:px-6 md:px-6 lg:px-8 lg:py-3.5">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <HamburgerButton />
         <h1 className="truncate font-display text-lg font-semibold text-plum-dark sm:text-xl">{title}</h1>

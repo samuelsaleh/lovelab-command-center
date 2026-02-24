@@ -189,7 +189,7 @@ function Dashboard() {
           </div>
           <Link
             href="/ai"
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
+            className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
           >
             Open AI
           </Link>
@@ -211,7 +211,7 @@ function Dashboard() {
               </div>
               <Link
                 href={`/ai?prompt=${encodeURIComponent(action.prompt)}`}
-                className="shrink-0 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
+                className="shrink-0 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
               >
                 Ask AI
               </Link>
@@ -231,7 +231,7 @@ function Dashboard() {
           </div>
           <Link
             href="/ai"
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
+            className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
           >
             Full screen
           </Link>

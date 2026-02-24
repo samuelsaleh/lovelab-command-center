@@ -12,7 +12,7 @@ interface MetricCardProps {
 
 export default function MetricCard({ label, value, change, changeType = 'neutral', icon }: MetricCardProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 transition-shadow hover:shadow-sm md:p-5">
+    <div className="rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-lovelab-border hover:shadow-sm md:p-5">
       <div className="mb-3 flex items-center gap-2">
         {icon && (
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-100 text-gray-500">

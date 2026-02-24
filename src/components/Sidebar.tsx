@@ -78,7 +78,7 @@ export default function Sidebar() {
               return (
                 <div
                   key={i}
-                  className="px-5 pt-4 pb-2 text-[10px] uppercase tracking-[1.5px] text-white/40 font-semibold md:px-0 md:text-center md:text-[8px]"
+                  className="font-label px-5 pt-4 pb-2 text-[10px] uppercase tracking-[1.5px] text-white/40 font-semibold md:px-0 md:text-center md:text-[8px]"
                 >
                   {item.section}
                 </div>
@@ -94,7 +94,7 @@ export default function Sidebar() {
                 key={i}
                 href={item.href}
                 onClick={handleNavClick}
-                className={`flex min-h-[44px] items-center gap-3 px-5 py-2.5 mx-2 rounded-lg text-sm transition-all md:justify-center md:px-0 md:mx-1 ${
+                className={`font-label flex min-h-[44px] items-center gap-3 px-5 py-2.5 mx-2 rounded-lg text-sm transition-all md:justify-center md:px-0 md:mx-1 ${
                   isActive
                     ? 'bg-white/15 text-white font-medium'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'

@@ -117,7 +117,7 @@ export default function AiChat({ compact = false, initialPrompt = '' }: { compac
               key={skill.id}
               type="button"
               onClick={() => setInput(skill.promptTemplate)}
-              className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
+              className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
             >
               {isSimple ? skill.simpleLabel : skill.name}
             </button>
@@ -140,7 +140,7 @@ export default function AiChat({ compact = false, initialPrompt = '' }: { compac
           type="button"
           onClick={sendMessage}
           disabled={loading || !input.trim()}
-          className="min-h-[42px] shrink-0 rounded-lg bg-plum px-5 text-sm font-semibold text-white transition-colors hover:bg-plum-dark disabled:opacity-40"
+          className="min-h-[42px] shrink-0 rounded-full bg-plum px-5 text-sm font-semibold text-white transition-colors hover:bg-plum-dark disabled:opacity-40"
         >
           Send
         </button>

@@ -39,7 +39,7 @@ function SkillCard({ skill, runSkillHref }: { skill: MarketingSkill; runSkillHre
       <p className="mb-3 flex-1 text-[12px] leading-relaxed text-gray-600 sm:text-[13px]">{skill.description}</p>
       <Link
         href={runSkillHref}
-        className="inline-flex min-h-[40px] items-center justify-center rounded-lg bg-plum px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-plum-dark"
+        className="inline-flex min-h-[40px] items-center justify-center rounded-full bg-plum px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-plum-dark"
       >
         Run skill
       </Link>
