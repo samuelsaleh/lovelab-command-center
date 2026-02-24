@@ -16,7 +16,7 @@ export default function AiChat({ compact = false, initialPrompt = '' }: { compac
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Bonjour Sam! I'm La Lumière AI, your LoveLab marketing advisor. I have access to your **live Google Ads** and **Meta Ads** data, your brand guidelines, all 7 collections, and B2C growth strategies. What would you like to work on today?`,
+      content: `Hello Sam. I'm your LoveLab marketing advisor. I have access to your live Google Ads and Meta Ads data, brand guidelines, all 7 collections, and B2C growth strategies. What would you like to work on today?`,
     },
   ]);
   const [input, setInput] = useState(initialPrompt);
@@ -62,7 +62,7 @@ export default function AiChat({ compact = false, initialPrompt = '' }: { compac
           content: 'I encountered an issue connecting to the AI service. Please check your ANTHROPIC_API_KEY in the .env file.',
         }]);
       }
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: 'Connection error — make sure the server is running and the API key is set.',
@@ -73,69 +73,74 @@ export default function AiChat({ compact = false, initialPrompt = '' }: { compac
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border-2 border-plum-bg bg-white">
-      <div className={`overflow-y-auto p-3 sm:p-4 ${compact ? 'max-h-64 sm:max-h-80' : 'max-h-[400px] sm:max-h-[500px]'}`}>
+    <div className="bg-white">
+      {/* Messages */}
+      <div className={`overflow-y-auto p-4 sm:p-5 ${compact ? 'max-h-64 sm:max-h-72' : 'max-h-[460px] sm:max-h-[540px]'}`}>
         {messages.map((msg, i) => (
-          <div key={i} className="mb-4 flex gap-2.5">
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-bold sm:h-8 sm:w-8 ${
+          <div key={i} className={`mb-4 flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold ${
               msg.role === 'assistant'
-                ? 'bg-gradient-to-br from-plum to-plum-light text-white'
-                : 'bg-gold text-plum-dark'
+                ? 'bg-plum text-white'
+                : 'bg-gray-200 text-gray-600'
             }`}>
-              {msg.role === 'assistant' ? '✦' : 'S'}
+              {msg.role === 'assistant' ? 'AI' : 'S'}
             </div>
-            <div className={`max-w-[85%] rounded-xl px-3 py-2.5 text-sm leading-relaxed sm:max-w-[80%] sm:px-4 sm:py-3 ${
+            <div className={`max-w-[82%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed ${
               msg.role === 'assistant'
-                ? 'border border-plum/10 bg-plum-bg'
-                : 'bg-gray-100'
+                ? 'bg-gray-50 text-gray-800'
+                : 'bg-plum text-white'
             }`}>
               <div dangerouslySetInnerHTML={{
                 __html: msg.content
-                  .replace(/\*\*(.*?)\*\*/g, '<strong class="text-plum">$1</strong>')
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                   .replace(/\n/g, '<br/>')
               }} />
             </div>
           </div>
         ))}
         {loading && (
-          <div className="mb-4 flex gap-2.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-plum to-plum-light text-xs font-bold text-white sm:h-8 sm:w-8">✦</div>
-            <div className="rounded-xl bg-plum-bg px-3 py-2.5 text-sm text-gray-500 sm:px-4 sm:py-3">
+          <div className="mb-4 flex gap-3">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-plum text-[10px] font-bold text-white">AI</div>
+            <div className="rounded-xl bg-gray-50 px-3.5 py-2.5 text-sm text-gray-400">
               Analyzing your data...
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Skill chips */}
       {chipsToShow.length > 0 && (
-        <div className="flex flex-wrap gap-2 border-t border-gray-200 bg-gray-50/80 px-3 py-2 sm:px-3 sm:py-2">
+        <div className="flex flex-wrap gap-1.5 border-t border-gray-100 bg-gray-50/60 px-4 py-2.5">
           {chipsToShow.map((skill) => (
             <button
               key={skill.id}
               type="button"
               onClick={() => setInput(skill.promptTemplate)}
-              className="rounded-lg border border-plum/20 bg-white px-3 py-1.5 text-[11px] font-medium text-plum transition-colors hover:border-plum hover:bg-plum-bg sm:text-xs"
+              className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 transition-colors hover:border-plum hover:text-plum"
             >
               {isSimple ? skill.simpleLabel : skill.name}
             </button>
           ))}
         </div>
       )}
-      <div className="flex flex-col gap-2 border-t border-gray-200 bg-gray-50 p-3 sm:flex-row sm:items-center sm:gap-2.5">
+
+      {/* Input */}
+      <div className="flex gap-2 border-t border-gray-100 p-3 sm:p-4">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-          placeholder="Ask about campaigns, markets, collections, ad copy..."
-          className="min-h-[44px] flex-1 rounded-lg border border-gray-200 px-3.5 py-2.5 text-base outline-none transition-colors focus:border-plum disabled:opacity-60 sm:min-h-0 sm:text-sm"
+          placeholder={isSimple ? 'Ask anything about your ads...' : 'Ask about campaigns, budgets, creative, markets...'}
+          className="min-h-[42px] flex-1 rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-plum disabled:opacity-60"
           disabled={loading}
         />
         <button
           type="button"
           onClick={sendMessage}
-          disabled={loading}
-          className="min-h-[44px] shrink-0 rounded-lg bg-plum px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-plum-dark disabled:opacity-50 sm:min-h-0"
+          disabled={loading || !input.trim()}
+          className="min-h-[42px] shrink-0 rounded-lg bg-plum px-5 text-sm font-semibold text-white transition-colors hover:bg-plum-dark disabled:opacity-40"
         >
           Send
         </button>

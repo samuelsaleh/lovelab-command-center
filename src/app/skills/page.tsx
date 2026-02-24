@@ -78,12 +78,12 @@ export default function SkillsPage() {
     <>
       <div className="mb-6">
         <h2 className="mb-1 font-display text-xl font-semibold text-plum-dark sm:text-2xl">
-          {isSimple ? 'Marketing skills' : 'Skills Library'}
+          {isSimple ? 'Marketing tools' : 'Skills library'}
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-400">
           {isSimple
-            ? 'Use these to fix problems, find opportunities, and get reports.'
-            : '44 marketing skills for Google Ads, Meta Ads, and more. Run any skill with your live data from the dashboard.'}
+            ? 'Run these to fix problems, find opportunities, and get reports.'
+            : '44 pre-built marketing skills for Google Ads, Meta Ads, and more. Each one runs against your live data.'}
         </p>
       </div>
 
