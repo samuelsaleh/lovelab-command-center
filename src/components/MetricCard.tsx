@@ -12,18 +12,18 @@ interface MetricCardProps {
 
 export default function MetricCard({ label, value, change, changeType = 'neutral', icon, iconBg, iconColor }: MetricCardProps) {
   return (
-    <div className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-lg hover:shadow-plum/5 transition-shadow">
-      <div className="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wide mb-2">
+    <div className="rounded-xl border border-gray-200 bg-white p-4 transition-shadow hover:shadow-lg hover:shadow-plum/5 md:p-5">
+      <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-gray-500 sm:text-xs">
         {icon && (
-          <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] ${iconBg} ${iconColor}`}>
+          <span className={`flex h-4 w-4 items-center justify-center rounded text-[10px] ${iconBg} ${iconColor}`}>
             {icon}
           </span>
         )}
         {label}
       </div>
-      <div className="text-[28px] font-bold text-gray-900 tracking-tight">{value}</div>
+      <div className="text-[22px] font-bold tracking-tight text-gray-900 md:text-[28px]">{value}</div>
       {change && (
-        <div className={`text-xs mt-1.5 font-medium ${
+        <div className={`mt-1.5 text-xs font-medium ${
           changeType === 'up' ? 'text-emerald-600' :
           changeType === 'down' ? 'text-red-500' :
           'text-gray-500'

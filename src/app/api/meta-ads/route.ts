@@ -1,14 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCampaigns, getCampaignInsights, getAccountInfo, getAudienceInsights } from '@/lib/meta-ads';
+import { META_CACHED_DATA } from '@/data/meta-cache';
+
+// Check if live Meta API is configured
+const hasMetaToken = () => !!process.env.META_ACCESS_TOKEN && process.env.META_ACCESS_TOKEN !== 'your-meta-access-token';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'campaigns';
+
+    // If no Meta token is configured, use cached data
+    if (!hasMetaToken()) {
+      console.log('No META_ACCESS_TOKEN configured — using cached data');
+
+      const cached = META_CACHED_DATA;
+
+      return NextResponse.json({
+        platform: 'meta',
+        source: 'cache',
+        lastUpdated: cached.lastUpdated,
+        data: cached.campaigns.map(c => ({
+          campaignName: c.campaignName,
+          campaignId: c.campaignId,
+          impressions: c.metrics.impressions,
+          clicks: c.metrics.clicks,
+          spend: c.metrics.spend,
+          reach: c.metrics.reach,
+          ctr: c.metrics.ctr,
+          cpc: c.metrics.cpc,
+          actions: c.actions,
+        })),
+        totals: cached.totals,
+        fetchedAt: cached.lastUpdated,
+        note: 'Using cached data. To enable live data, add META_ACCESS_TOKEN to .env',
+      });
+    }
+
+    // Live Meta API fetch
+    const { getCampaigns, getCampaignInsights, getAccountInfo, getAudienceInsights } = await import('@/lib/meta-ads');
     const timeRange = searchParams.get('timeRange') || 'last_30d';
 
     let data;
-
     switch (type) {
       case 'campaigns':
         data = await getCampaigns();
@@ -26,7 +58,6 @@ export async function GET(request: NextRequest) {
         data = await getCampaignInsights(timeRange);
     }
 
-    // Transform Meta data into clean format
     const insights = data?.data?.map((row: any) => ({
       campaignName: row.campaign_name,
       campaignId: row.campaign_id,
@@ -50,16 +81,33 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       platform: 'meta',
-      timeRange,
+      source: 'live',
       data: insights,
       totals,
       fetchedAt: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Meta Ads API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch Meta Ads data', details: error.message },
-      { status: 500 }
-    );
+    console.error('Meta Ads API error, falling back to cache:', error);
+
+    // Fallback to cached data on any error
+    const cached = META_CACHED_DATA;
+    return NextResponse.json({
+      platform: 'meta',
+      source: 'cache-fallback',
+      data: cached.campaigns.map(c => ({
+        campaignName: c.campaignName,
+        campaignId: c.campaignId,
+        impressions: c.metrics.impressions,
+        clicks: c.metrics.clicks,
+        spend: c.metrics.spend,
+        reach: c.metrics.reach,
+        ctr: c.metrics.ctr,
+        cpc: c.metrics.cpc,
+        actions: c.actions,
+      })),
+      totals: cached.totals,
+      fetchedAt: cached.lastUpdated,
+      note: 'Live API failed, using cached data',
+    });
   }
 }

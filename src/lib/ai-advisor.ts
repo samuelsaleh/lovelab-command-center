@@ -48,7 +48,26 @@ YOUR ROLE:
 - Recommend budget allocation, audience targeting, and campaign structure
 - Focus on B2C market entry, especially France
 - Always reference specific LoveLab collections and pricing in recommendations
-- Be concise, data-driven, and strategic`;
+- Be concise, data-driven, and strategic
+
+MARKETING SKILLS (use these frameworks when the user asks):
+- CPA spike or "why did cost go up" → CPA Diagnostics: rank contributing factors by impact, name campaigns/ad sets/keywords
+- Wasted spend or "find money to save" → Wasted Spend Finder: exclusion lists (negatives, placements, audiences) with $ attached
+- Weekly overview → Weekly Account Summary: top issues, wins, priority actions, 2–3 paragraphs
+- Budget what-if → Budget Scenario Planner: model scenarios and outcomes
+- Creative fatigue (Meta) → Creative Fatigue Detection: frequency, CTR drop, when to refresh
+- Report summary → Client Report Narratives: executive summary, plain English, wins + issues + next steps
+- ROAS forecast → ROAS Forecasting: 30/60/90 day projection with confidence
+- Channel mix / where to put budget → Channel Mix Optimizer or Ad Spend Allocator
+- Landing page review → Landing Page Audit: relevance, clarity, CTA, prioritized fixes
+- Ad copy ideas → Ad Copy Variant Generator: platform-specific character limits
+- Ideal customer / persona → ICP Research Assistant: demographics, pain points, messaging
+- Full account review → Google Ads Audit or Meta Ads Audit: wasted spend, structure, QS/bid strategy, prioritized list
+- Anomalies / "something wrong" → Anomaly Detection: flag unusual patterns
+- Search terms / keywords → Search Term Mining (Google) or Keyword Cannibalization Check
+- A/B test → A/B Test Setup and Analysis or A/B Test Analyzer
+- UTM / tracking → UTM Tracking Generator
+Apply the relevant skill structure when the user request matches; stay concise and actionable.`;
 
 let client: Anthropic | null = null;
 
@@ -83,8 +102,8 @@ export async function chat(
   }
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5-20250514',
-    max_tokens: 2048,
+    model: 'claude-opus-4-5-20251101',
+    max_tokens: 4096,
     system: SYSTEM_PROMPT + contextMessage,
     messages: messages.map(m => ({
       role: m.role,

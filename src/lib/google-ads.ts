@@ -3,7 +3,7 @@
  * Uses the Google Ads REST API to fetch campaign data
  */
 
-const GOOGLE_ADS_API_VERSION = 'v17';
+const GOOGLE_ADS_API_VERSION = 'v20';
 const BASE_URL = `https://googleads.googleapis.com/${GOOGLE_ADS_API_VERSION}`;
 
 interface GoogleAdsConfig {
@@ -37,12 +37,23 @@ async function getAccessToken(config: GoogleAdsConfig): Promise<string> {
       grant_type: 'refresh_token',
     }),
   });
+  const contentType = response.headers.get('content-type') || '';
+  if (!response.ok || !contentType.includes('application/json')) {
+    const text = await response.text();
+    throw new Error(`OAuth token request failed (${response.status}): ${text.slice(0, 200)}`);
+  }
   const data = await response.json();
+  if (!data.access_token) {
+    throw new Error(`OAuth token missing in response: ${JSON.stringify(data)}`);
+  }
   return data.access_token;
 }
 
 export async function queryGoogleAds(query: string) {
   const config = getConfig();
+  if (!config.customerId || !config.clientId || !config.refreshToken) {
+    throw new Error('Google Ads credentials not configured — set GOOGLE_ADS_* env vars');
+  }
   const accessToken = await getAccessToken(config);
   const customerId = config.customerId.replace(/-/g, '');
 
@@ -62,6 +73,15 @@ export async function queryGoogleAds(query: string) {
     }
   );
 
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await response.text();
+    throw new Error(`Google Ads API returned non-JSON (${response.status}): ${text.slice(0, 500)}`);
+  }
+  if (!response.ok) {
+    const errData = await response.json();
+    throw new Error(`Google Ads API error (${response.status}): ${JSON.stringify(errData).slice(0, 500)}`);
+  }
   const data = await response.json();
   return data;
 }

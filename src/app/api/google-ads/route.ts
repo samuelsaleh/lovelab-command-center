@@ -50,10 +50,15 @@ export async function GET(request: NextRequest) {
       fetchedAt: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('Google Ads API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch Google Ads data', details: error.message },
-      { status: 500 }
-    );
+    console.error('Google Ads API error:', error.message);
+    // Return empty-but-valid shape so the UI never breaks
+    return NextResponse.json({
+      platform: 'google',
+      source: 'error-fallback',
+      campaigns: [],
+      totals: { spend: 0, impressions: 0, clicks: 0, conversions: 0 },
+      fetchedAt: new Date().toISOString(),
+      error: error.message,
+    });
   }
 }
