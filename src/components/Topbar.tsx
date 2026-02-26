@@ -8,14 +8,8 @@ import ViewModeToggle from '@/components/ViewModeToggle';
 
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Dashboard',
-  '/campaigns': 'Campaign Deep Dive',
-  '/google': 'Google Ads',
-  '/meta': 'Meta Ads',
-  '/ai': 'La Lumière AI Advisor',
-  '/brand': 'Brand Health',
-  '/markets': 'Market Strategy',
-  '/collections': 'Collections',
-  '/skills': 'Skills Library',
+  '/performance': 'Marketing Performance',
+  '/ai': 'AI Advisor',
   '/simple': 'Dashboard',
   '/expert': 'Dashboard',
 };
@@ -64,7 +58,7 @@ function RefreshButton() {
 export default function Topbar() {
   const pathname = usePathname();
   const title = PAGE_TITLES[pathname || '/'] || 'Dashboard';
-  const [dateStr, setDateStr] = useState('');
+  const [dateStr, setDateStr] = useState<string | null>(null);
 
   useEffect(() => {
     setDateStr(
@@ -73,7 +67,7 @@ export default function Topbar() {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      })
+      }).replace(/,/g, '')
     );
   }, []);
 
@@ -90,8 +84,8 @@ export default function Topbar() {
           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-dot" />
           <span className="text-[10px] font-semibold sm:text-xs">Live Data</span>
         </div>
-        {dateStr && (
-          <div className="hidden text-right text-xs text-gray-500 sm:block sm:text-sm">
+        {dateStr !== null && (
+          <div className="hidden text-right text-xs text-gray-500 sm:block sm:text-sm" suppressHydrationWarning>
             {dateStr}
           </div>
         )}

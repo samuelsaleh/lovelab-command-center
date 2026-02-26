@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useViewMode } from '@/context/ViewModeContext';
 import { getChatPresetSkills } from '@/data/marketing-skills';
+import ArtifactRenderer, { parseArtifact } from '@/components/ArtifactRenderer';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -90,11 +91,31 @@ export default function AiChat({ compact = false, initialPrompt = '' }: { compac
                 ? 'bg-gray-50 text-gray-800'
                 : 'bg-plum text-white'
             }`}>
-              <div dangerouslySetInnerHTML={{
-                __html: msg.content
-                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                  .replace(/\n/g, '<br/>')
-              }} />
+              {msg.role === 'assistant' ? (
+                <>
+                  {(() => {
+                    const { textWithoutArtifact } = parseArtifact(msg.content);
+                    return textWithoutArtifact ? (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: textWithoutArtifact
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\n/g, '<br/>'),
+                        }}
+                      />
+                    ) : null;
+                  })()}
+                  <ArtifactRenderer content={msg.content} />
+                </>
+              ) : (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: msg.content
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\n/g, '<br/>'),
+                  }}
+                />
+              )}
             </div>
           </div>
         ))}

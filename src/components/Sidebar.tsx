@@ -5,19 +5,9 @@ import { usePathname } from 'next/navigation';
 import { useMobileMenu } from '@/context/MobileMenuContext';
 
 const NAV_ITEMS = [
-  { section: 'Overview' },
   { label: 'Dashboard', href: '/', icon: 'grid' },
-  { label: 'Campaigns', href: '/campaigns', icon: 'activity', badge: '4' },
-  { section: 'Platforms' },
-  { label: 'Google Ads', href: '/google', icon: 'search' },
-  { label: 'Meta Ads', href: '/meta', icon: 'facebook' },
-  { section: 'Intelligence' },
-  { label: 'AI Advisor', href: '/ai', icon: 'brain', badge: '5' },
-  { label: 'Brand Health', href: '/brand', icon: 'heart' },
-  { label: 'Markets', href: '/markets', icon: 'globe' },
-  { label: 'Skills Library', href: '/skills', icon: 'sparkles' },
-  { section: 'Collections' },
-  { label: 'All Collections', href: '/collections', icon: 'layers' },
+  { label: 'Marketing Performance', href: '/performance', icon: 'activity' },
+  { label: 'AI Advisor', href: '/ai', icon: 'brain' },
 ];
 
 const icons: Record<string, JSX.Element> = {
@@ -74,21 +64,7 @@ export default function Sidebar() {
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-2">
           {NAV_ITEMS.map((item, i) => {
-            if ('section' in item && item.section) {
-              return (
-                <div
-                  key={i}
-                  className="font-label px-5 pt-4 pb-2 text-[10px] uppercase tracking-[1.5px] text-white/40 font-semibold md:px-0 md:text-center md:text-[8px]"
-                >
-                  {item.section}
-                </div>
-              );
-            }
-
-            if (!('href' in item) || !item.href) return null;
-
             const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href));
-
             return (
               <Link
                 key={i}
@@ -99,15 +75,10 @@ export default function Sidebar() {
                     ? 'bg-white/15 text-white font-medium'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
-                title={typeof item.label === 'string' ? item.label : undefined}
+                title={item.label}
               >
-                {'icon' in item && item.icon && icons[item.icon]}
-                <span className="md:sr-only">{'label' in item && item.label}</span>
-                {'badge' in item && item.badge && (
-                  <span className="ml-auto bg-gold text-plum-dark text-[10px] font-bold px-2 py-0.5 rounded-full md:absolute md:right-1 md:top-1/2 md:-translate-y-1/2 md:ml-0">
-                    {item.badge}
-                  </span>
-                )}
+                {icons[item.icon]}
+                <span className="md:sr-only">{item.label}</span>
               </Link>
             );
           })}
