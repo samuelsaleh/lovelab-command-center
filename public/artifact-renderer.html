@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artifact Renderer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            plum: {
+              DEFAULT: '#5D3A5E',
+              dark: '#4A2545',
+              light: '#8957AF',
+              bg: '#F7F0F8',
+            },
+            gold: {
+              DEFAULT: '#C9A665',
+              dark: '#A67C3A',
+              light: '#E8D5A8',
+            },
+            lovelab: {
+              bg: '#FDF7FA',
+              muted: '#8A6A7D',
+              border: '#DCC5D5',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['Playfair Display', 'Georgia', 'serif'],
+            label: ['Montserrat', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  
+  <script>
+    window.__cdnErrors = [];
+    window.__cdnLoaded = {};
+    function cdnOk(lib) { window.__cdnLoaded[lib] = true; }
+    function cdnFail(lib, url) { window.__cdnErrors.push(lib + ': ' + url); }
+  </script>
+
+  <script
+    crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"
+    onload="cdnOk('react')" onerror="cdnFail('react', this.src)"></script>
+  <script
+    crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"
+    onload="cdnOk('reactDOM')" onerror="cdnFail('reactDOM', this.src)"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"
+    onload="cdnOk('propTypes')" onerror="cdnFail('propTypes', this.src)"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.26.9/babel.min.js"
+    onload="cdnOk('babel')" onerror="cdnFail('babel', this.src)"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/recharts@2.15.0/umd/Recharts.min.js"
+    onload="cdnOk('recharts')" onerror="cdnFail('recharts', this.src)"></script>
+  
+  <style>
+    * { box-sizing: border-box; }
+    html, body, #root {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #FDF7FA;
+    }
+    .error-container {
+      padding: 24px; background: #fef2f2;
+      border: 1px solid #fecaca; border-radius: 12px; margin: 16px;
+    }
+    .error-title { color: #dc2626; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+    .error-message {
+      color: #7f1d1d; font-size: 13px; font-family: monospace;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .loading-container {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; height: 100%; color: #8A6A7D;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px; border: 3px solid #DCC5D5;
+      border-top-color: #5D3A5E; border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p style="margin-top: 16px; font-size: 14px;">Waiting for artifact...</p>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var root = document.getElementById('root');
+      var reactRoot = null;
+
+      function showError(title, message) {
+        root.innerHTML =
+          '<div class="error-container">' +
+            '<div class="error-title">' + escapeHtml(title) + '</div>' +
+            '<div class="error-message">' + escapeHtml(message) + '</div>' +
+          '</div>';
+      }
+
+      function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function stripImports(code) {
+        return code
+          .replace(/^import\s+.*?from\s+['"].*?['"];?\s*$/gm, '')
+          .replace(/^import\s+['"].*?['"];?\s*$/gm, '')
+          .replace(/^const\s+\{[^}]*\}\s*=\s*require\s*\(['"].*?['"]\);?\s*$/gm, '')
+          .replace(/^const\s+\w+\s*=\s*require\s*\(['"].*?['"]\);?\s*$/gm, '');
+      }
+
+      function requireShim(mod) {
+        var map = {
+          'react': window.React,
+          'react-dom': window.ReactDOM,
+          'react-dom/client': window.ReactDOM,
+          'recharts': window.Recharts || {},
+        };
+        return map[mod] || {};
+      }
+
+      function renderComponent(code) {
+        if (window.__cdnErrors.length > 0) {
+          showError(
+            'Library Load Failed',
+            'The following CDN scripts failed to load:\n' + window.__cdnErrors.join('\n') +
+            '\n\nCheck your network connection and try refreshing.'
+          );
+          return;
+        }
+
+        if (!window.React || !window.ReactDOM || !window.Babel) {
+          showError('Missing Libraries', 'React, ReactDOM, or Babel did not load. Try refreshing the page.');
+          return;
+        }
+
+        try {
+          var cleaned = stripImports(code);
+
+          var transformed = Babel.transform(cleaned, {
+            presets: ['react', ['env', { modules: 'commonjs' }]],
+            plugins: []
+          }).code;
+
+          var module = { exports: {} };
+          var exports = module.exports;
+
+          var React = window.React;
+          var useState = React.useState;
+          var useEffect = React.useEffect;
+          var useMemo = React.useMemo;
+          var useCallback = React.useCallback;
+          var useRef = React.useRef;
+          var Fragment = React.Fragment;
+          var ReactDOM = window.ReactDOM;
+
+          var RC = window.Recharts || {};
+          var ResponsiveContainer = RC.ResponsiveContainer;
+          var BarChart = RC.BarChart;
+          var Bar = RC.Bar;
+          var LineChart = RC.LineChart;
+          var Line = RC.Line;
+          var AreaChart = RC.AreaChart;
+          var Area = RC.Area;
+          var PieChart = RC.PieChart;
+          var Pie = RC.Pie;
+          var Cell = RC.Cell;
+          var RadarChart = RC.RadarChart;
+          var Radar = RC.Radar;
+          var PolarGrid = RC.PolarGrid;
+          var PolarAngleAxis = RC.PolarAngleAxis;
+          var PolarRadiusAxis = RC.PolarRadiusAxis;
+          var ComposedChart = RC.ComposedChart;
+          var ScatterChart = RC.ScatterChart;
+          var Scatter = RC.Scatter;
+          var XAxis = RC.XAxis;
+          var YAxis = RC.YAxis;
+          var ZAxis = RC.ZAxis;
+          var CartesianGrid = RC.CartesianGrid;
+          var Tooltip = RC.Tooltip;
+          var Legend = RC.Legend;
+          var ReferenceLine = RC.ReferenceLine;
+          var ReferenceArea = RC.ReferenceArea;
+          var ReferenceDot = RC.ReferenceDot;
+          var Brush = RC.Brush;
+          var Treemap = RC.Treemap;
+          var Funnel = RC.Funnel;
+          var FunnelChart = RC.FunnelChart;
+          var RadialBarChart = RC.RadialBarChart;
+          var RadialBar = RC.RadialBar;
+
+          var func = new Function(
+            'module', 'exports', 'require',
+            'React', 'useState', 'useEffect', 'useMemo',
+            'useCallback', 'useRef', 'Fragment',
+            'ResponsiveContainer', 'BarChart', 'Bar', 'LineChart', 'Line',
+            'AreaChart', 'Area', 'PieChart', 'Pie', 'Cell',
+            'RadarChart', 'Radar', 'PolarGrid', 'PolarAngleAxis', 'PolarRadiusAxis',
+            'ComposedChart', 'ScatterChart', 'Scatter',
+            'XAxis', 'YAxis', 'ZAxis', 'CartesianGrid', 'Tooltip', 'Legend',
+            'ReferenceLine', 'ReferenceArea', 'ReferenceDot', 'Brush',
+            'Treemap', 'Funnel', 'FunnelChart', 'RadialBarChart', 'RadialBar',
+            transformed
+          );
+
+          func(
+            module, exports, requireShim,
+            React, useState, useEffect, useMemo,
+            useCallback, useRef, Fragment,
+            ResponsiveContainer, BarChart, Bar, LineChart, Line,
+            AreaChart, Area, PieChart, Pie, Cell,
+            RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+            ComposedChart, ScatterChart, Scatter,
+            XAxis, YAxis, ZAxis, CartesianGrid, Tooltip, Legend,
+            ReferenceLine, ReferenceArea, ReferenceDot, Brush,
+            Treemap, Funnel, FunnelChart, RadialBarChart, RadialBar
+          );
+
+          var Component = module.exports.default || module.exports;
+
+          if (!Component || typeof Component !== 'function') {
+            throw new Error('No default export found. The component must use: export default function ComponentName() { ... }');
+          }
+
+          if (!reactRoot) {
+            reactRoot = ReactDOM.createRoot(root);
+          }
+
+          reactRoot.render(React.createElement(Component));
+
+        } catch (error) {
+          console.error('Artifact render error:', error);
+          showError('Render Error', error.message + (error.stack ? '\n\n' + error.stack : ''));
+        }
+      }
+
+      window.addEventListener('message', function(event) {
+        var data = event.data || {};
+        if (data.type === 'render' && data.code) {
+          renderComponent(data.code);
+        }
+      });
+
+      if (window.location.hash) {
+        try {
+          var code = decodeURIComponent(window.location.hash.slice(1));
+          if (code) renderComponent(code);
+        } catch (e) {
+          console.error('Failed to parse hash code:', e);
+        }
+      }
+
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'artifact-ready' }, '*');
+      }
+    })();
+  </script>
+</body>
+</html>

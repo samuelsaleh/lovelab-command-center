@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { chat, generateRecommendations, generateAdCopy, ChatMessage } from '@/lib/ai-advisor';
 import { getCampaignPerformance } from '@/lib/google-ads';
 import { getCampaignInsights } from '@/lib/meta-ads';
+import { selectSkillsForQuery, formatSkillsForPrompt } from '@/lib/skill-loader';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,14 +34,14 @@ export async function POST(request: NextRequest) {
       const googleData = await getCampaignPerformance();
       liveData.google = googleData;
     } catch (e) {
-      // Google data unavailable, continue without
+      console.log('Google Ads data unavailable');
     }
 
     try {
       const metaData = await getCampaignInsights();
       liveData.meta = metaData;
     } catch (e) {
-      // Meta data unavailable, continue without
+      console.log('Meta Ads data unavailable');
     }
 
     const chatMessages: ChatMessage[] = messages.map((m: any) => ({
@@ -48,7 +49,19 @@ export async function POST(request: NextRequest) {
       content: m.content,
     }));
 
-    const response = await chat(chatMessages, liveData);
+    // Get the latest user message to select relevant skills
+    const latestUserMessage = chatMessages.filter(m => m.role === 'user').pop();
+    let skillContext = '';
+    
+    if (latestUserMessage) {
+      const selectedSkills = selectSkillsForQuery(latestUserMessage.content, 2);
+      if (selectedSkills.length > 0) {
+        skillContext = formatSkillsForPrompt(selectedSkills);
+        console.log(`Selected skills: ${selectedSkills.map(s => s.name).join(', ')}`);
+      }
+    }
+
+    const response = await chat(chatMessages, liveData, skillContext);
 
     return NextResponse.json({
       response,

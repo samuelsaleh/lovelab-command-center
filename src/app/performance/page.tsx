@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import TabNavigation from '@/components/dashboard/TabNavigation';
+import PerformanceSkillChips from '@/components/dashboard/PerformanceSkillChips';
 import type { TabId } from '@/components/dashboard/TabNavigation';
 
 const OverviewTab = dynamic(() => import('@/components/dashboard/OverviewTab'), { ssr: false });
@@ -10,6 +11,7 @@ const CampaignsTab = dynamic(() => import('@/components/dashboard/CampaignsTab')
 const GeographyTab = dynamic(() => import('@/components/dashboard/GeographyTab'), { ssr: false });
 const SearchTermsTab = dynamic(() => import('@/components/dashboard/SearchTermsTab'), { ssr: false });
 const InsightsTab = dynamic(() => import('@/components/dashboard/InsightsTab'), { ssr: false });
+const MetaTab = dynamic(() => import('@/components/dashboard/MetaTab'), { ssr: false });
 
 const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   overview: OverviewTab,
@@ -17,6 +19,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   geography: GeographyTab,
   'search-terms': SearchTermsTab,
   insights: InsightsTab,
+  'meta-ads': MetaTab,
 };
 
 export default function PerformancePage() {
@@ -36,6 +39,8 @@ export default function PerformancePage() {
       </div>
 
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <PerformanceSkillChips activeTab={activeTab} />
 
       <ActiveComponent />
     </>

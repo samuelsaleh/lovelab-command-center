@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', href: '/', icon: 'grid' },
   { label: 'Marketing Performance', href: '/performance', icon: 'activity' },
   { label: 'AI Advisor', href: '/ai', icon: 'brain' },
+  { label: 'Skills Library', href: '/skills', icon: 'sparkles' },
 ];
 
 const icons: Record<string, JSX.Element> = {

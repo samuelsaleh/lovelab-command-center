@@ -135,8 +135,8 @@ export const PERSONAS = [
 ];
 
 export const DESIGN = {
-  primaryColor: '#6B3FA0', // ink-plum
-  accentColor: '#C9A96E', // gold
-  noPink: true, // Design rule: NO pink in UI
-  fonts: { heading: 'Playfair Display', body: 'Inter' },
+  primaryColor: '#5D3A5E',
+  accentColor: '#C9A665',
+  noPink: true,
+  fonts: { heading: 'Playfair Display', body: 'Inter', label: 'Montserrat' },
 };
